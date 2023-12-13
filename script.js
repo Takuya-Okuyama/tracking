@@ -1,61 +1,77 @@
-let watchId = null; // watchPositionから得られるIDを格納する変数
-let lastSavedTime = Date.now(); // 最後に保存した時刻
+// IDを格納するための変数、watchPosition関数から得られる
+let watchId = null;
+
+// 最後にデータを保存した時刻
+let lastSavedTime = Date.now();
+
+// トラッキングの状態（開始/停止）
 let isTracking = false;
-const sampling_interval = 10 * 1000; // ミリ秒
 
-// データベースの初期設定
+// ダウンロード先のファイル名
+let saveFilePath;
+
+// サンプリング間隔をミリ秒単位で設定
+const sampling_interval = 10 * 1000;
+
+// IndexedDBデータベースへの接続リクエスト
 let db;
-let savefilepath;
-const request = indexedDB.open("LocationsDB", 1);
+const dbRequest = indexedDB.open("LocationsDB", 1);
 
-request.onerror = function (event) {
+dbRequest.onerror = function (event) {
+    // データベース接続エラー時の処理
     console.error("Database error: " + event.target.errorCode);
 };
 
-request.onsuccess = function (event) {
+dbRequest.onsuccess = function (event) {
+    // データベース接続成功時の処理
     db = event.target.result;
 };
 
-request.onupgradeneeded = function (event) {
+dbRequest.onupgradeneeded = function (event) {
+    // データベースのセットアップやアップグレードが必要な場合の処理
     let db = event.target.result;
-    db.createObjectStore("locations", { autoIncrement: true });
+    if (!db.objectStoreNames.contains("locations")) {
+        db.createObjectStore("locations", { autoIncrement: true });
+    }
 };
 
 // 位置情報を取得してローカルストレージに保存する関数
 function saveLocation(position) {
     const currentTime = Date.now();
 
+    const locationData = {
+        time: new Date(position.timestamp).toISOString(),
+        lat: position.coords.latitude,
+        lon: position.coords.longitude,
+        alt: position.coords.altitude || null,
+        acc: position.coords.accuracy || null,
+        altacc: position.coords.altitudeAccuracy || null,
+        head: position.coords.heading || null,
+        spd: position.coords.speed || null
+    };
+
+    // ダッシュボードに最新情報を表示
+    const now = new Date();
+    document.getElementById('timestamp').innerText = now.toLocaleString('en-US', {
+        month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit'
+    });
+
+    // 緯度、経度、高度などの位置情報を表示
+    document.getElementById('latitude').innerText = locationData.lat.toFixed(5);
+    document.getElementById('longitude').innerText = locationData.lon.toFixed(5);
+    document.getElementById('altitude').innerText = locationData.alt !== null ? (locationData.alt.toFixed(1) + " m") : "N/A";
+    document.getElementById('accuracy').innerText = locationData.acc !== null ? (locationData.acc.toFixed(1) + " m") : "N/A";
+    document.getElementById('altitudeAccuracy').innerText = locationData.altacc !== null ? (locationData.altacc + " m") : "N/A";
+    document.getElementById('heading').innerText = locationData.head !== null ? locationData.head.toFixed(1) : "N/A";
+    document.getElementById('speed').innerText = locationData.spd !== null ? (locationData.spd.toFixed(1) + " m/s") : "N/A";
+
     // 前回の保存から10秒以上経過しているか確認
     if (currentTime - lastSavedTime >= sampling_interval) {
-        const locationData = {
-            time: new Date(position.timestamp).toISOString(),
-            lat: position.coords.latitude,
-            lon: position.coords.longitude,
-            alt: position.coords.altitude || null,
-            acc: position.coords.accuracy || null,
-            altacc: position.coords.altitudeAccuracy || null,
-            head: position.coords.heading || null,
-            spd: position.coords.speed || null
-        };
-
-        // テーブルに位置情報を追加
-        const now = new Date();
-        document.getElementById('timestamp').innerText = now.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        document.getElementById('latitude').innerText = locationData.lat;
-        document.getElementById('longitude').innerText = locationData.lon;
-        document.getElementById('altitude').innerText = locationData.alt !== null ? locationData.alt : 720;
-        document.getElementById('accuracy').innerText = locationData.acc !== null ? locationData.acc : 720;
-        document.getElementById('altitudeAccuracy').innerText = locationData.altacc !== null ? locationData.altacc : -1;
-        document.getElementById('heading').innerText = locationData.head !== null ? locationData.head : -1;
-        document.getElementById('speed').innerText = locationData.spd !== null ? locationData.spd : -1;
-
-        // ローカルストレージに保存する前に、以前のデータを配列として取得
-        //let locations = JSON.parse(localStorage.getItem('locations')) || [];
-        //locations.push(locationData);
-        ////localStorage.setItem('locations', JSON.stringify(locations));
         let transaction = db.transaction(["locations"], "readwrite");
         let store = transaction.objectStore("locations");
         store.add(locationData);
+
+        lastSavedTime = currentTime;
     }
 }
 
@@ -68,12 +84,11 @@ document.addEventListener('DOMContentLoaded', function () {
     let isTracking = false;
 
     async function startTracking() {
-        // 位置情報の追跡を開始するコードをここに記述
-        console.log("Tracking started...");
-
         // ファイル名
         const now = new Date();
-        savefilepath = "LocationTracker_" + now.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        saveFilePath = "LocationTracker_" + now.toLocaleString('en-US', {
+            month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit'
+        });
 
         if (navigator.geolocation) {
             // watchPositionメソッドを使用して位置情報の追跡を開始
@@ -85,7 +100,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // トラッキング開始時刻を表示
             const now = new Date();
-            const strTime = now.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const strTime = now.toLocaleString('en-US', {
+                month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit'
+            });
             document.getElementById('trackingStartTime').innerText = `Tracking started at: ${strTime}`;
 
             // ボタンの表示を変更
@@ -101,9 +118,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     async function downloadData() {
-        // データのダウンロードを行うコードをここに記述
-        console.log("Downloading data...");
-
         let transaction = db.transaction(["locations"], "readonly");
         let store = transaction.objectStore("locations");
         let request = store.getAll();
@@ -114,12 +128,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
         request.onsuccess = function (event) {
             let data = event.target.result;
-            download(JSON.stringify(data, null, 2), savefilepath, "text/plain");
+            download(JSON.stringify(data, null, 2), saveFilePath, "text/plain");
         };
 
         // トラッキング修了時刻を表示
         const now = new Date();
-        const formattedTime = now.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const formattedTime = now.toLocaleString('en-US', {
+            month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit'
+        });
         document.getElementById('trackingEndTime').innerText = `Tracking ended at: ${formattedTime}`;
 
         // ボタンの表示を元に戻す
