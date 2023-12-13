@@ -9,6 +9,7 @@ function saveLocation(position) {
         const locationData = {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
+            altitude: position.coords.altitude,
             timestamp: new Date(position.timestamp).toISOString()
         };
         // ローカルストレージに保存する前に、以前のデータを配列として取得
