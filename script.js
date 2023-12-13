@@ -33,6 +33,11 @@ function startTracking() {
     }
 }
 
+// 位置情報取得のエラーハンドリング
+function handleError(error) {
+    console.warn(`ERROR(${error.code}): ${error.message}`);
+}
+
 // 位置情報の追跡を停止
 function stopTracking() {
     if (watchId !== null) {
