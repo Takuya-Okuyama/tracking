@@ -8,21 +8,31 @@ function saveLocation(position) {
     // 前回の保存から2秒以上経過しているか確認
     if (currentTime - lastSavedTime >= 2000) {
         const locationData = {
+            timestamp: new Date(position.timestamp).toISOString(),
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
-            altitude: position.coords.altitude,
-            timestamp: new Date(position.timestamp).toISOString(),
-            accuracy: position.coords.accuracy,
-            altitudeAccuracy: position.coords.altitudeAccuracy,
-            heading: position.coords.heading,
-            speed: position.coords.speed,
+            altitude: position.coords.altitude || null,
+            accuracy: position.coords.accuracy || null,
+            //altitudeAccuracy: position.coords.altitudeAccuracy,
+            heading: position.coords.heading || null,
+            speed: position.coords.speed || null
         };
+
+        // テーブルに位置情報を追加
+        const row = document.getElementById("locationTable").insertRow(-1);
+        row.insertCell(0).innerHTML = locationData.timestamp;
+        row.insertCell(1).innerHTML = locationData.latitude;
+        row.insertCell(2).innerHTML = locationData.longitude;
+        row.insertCell(3).innerHTML = locationData.altitude !== null ? locationData.altitude : "N/A";
+        row.insertCell(4).innerHTML = locationData.accuracy !== null ? locationData.accuracy : "N/A";
+        row.insertCell(5).innerHTML = locationData.heading !== null ? locationData.heading : "N/A";
+        row.insertCell(6).innerHTML = locationData.speed !== null ? locationData.speed : "N/A";
 
         // ローカルストレージに保存する前に、以前のデータを配列として取得
         let locations = JSON.parse(localStorage.getItem('locations')) || [];
         locations.push(locationData);
         localStorage.setItem('locations', JSON.stringify(locations));
-        lastSavedTime = currentTime; // 最後に保存した時刻を更新
+        lastSavedTime = currentTime;
     }
 }
 
@@ -32,7 +42,7 @@ function startTracking() {
         // watchPositionメソッドを使用して位置情報の追跡を開始
         watchId = navigator.geolocation.watchPosition(saveLocation, handleError, {
             enableHighAccuracy: true,
-            timeout: 2000,
+            timeout: 100000,
             maximumAge: 0
         });
     } else {
@@ -42,7 +52,7 @@ function startTracking() {
 
 // 位置情報取得のエラーハンドリング
 function handleError(error) {
-    console.warn(`ERROR(${error.code}): ${error.message}`);
+    alert(`ERROR(${error.code}): ${error.message}`);
 }
 
 // 位置情報の追跡を停止
@@ -57,21 +67,21 @@ function downloadData() {
     // Retrieve the location data from local storage
     const locations = localStorage.getItem('locations');
     if (locations) {
-      // Create a Blob from the data
-      const blob = new Blob([locations], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-  
-      // Create a link and trigger the download
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'locations.txt';
-      document.body.appendChild(a);
-      a.click();
-  
-      // Clean up by revoking the Object URL and removing the link
-      URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+        // Create a Blob from the data
+        const blob = new Blob([locations], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+
+        // Create a link and trigger the download
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'locations.txt';
+        document.body.appendChild(a);
+        a.click();
+
+        // Clean up by revoking the Object URL and removing the link
+        URL.revokeObjectURL(url);
+        document.body.removeChild(a);
     } else {
-      console.log('No location data to download.');
+        console.log('No location data to download.');
     }
-  }
+}
