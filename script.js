@@ -1,6 +1,7 @@
 let watchId = null; // watchPositionから得られるIDを格納する変数
 let lastSavedTime = Date.now(); // 最後に保存した時刻
 let isTracking = false;
+let fileHandle;
 const sampling_interval = 10 * 1000; // ミリ秒
 
 // 位置情報を取得してローカルストレージに保存する関数
@@ -47,9 +48,21 @@ function handleError(error) {
 document.addEventListener('DOMContentLoaded', function () {
     let isTracking = false;
 
-    function startTracking() {
+    async function startTracking() {
         // 位置情報の追跡を開始するコードをここに記述
         console.log("Tracking started...");
+
+        // ファイル名
+        const now = new Date();
+        const filepath = "LocationTracker_" + now.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        alert(filepath);
+
+        const textContent = "書き込みたい内容";
+        fileHandle = await window.showSaveFilePicker({
+            suggestedName: filepath
+        });
+        await writeFile(fileHandle, textContent);
+        console.log('書き込み完了');
 
         if (navigator.geolocation) {
             // watchPositionメソッドを使用して位置情報の追跡を開始
@@ -63,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const now = new Date();
             const formattedTime = now.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
             document.getElementById('trackingStartTime').innerText = `Tracking started at: ${formattedTime}`;
-            
+
             // ボタンの表示を変更
             document.getElementById('trackingButton').innerText = 'Stop Tracking and Save Data';
             isTracking = true;
@@ -102,7 +115,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const now = new Date();
             const formattedTime = now.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
             document.getElementById('trackingEndTime').innerText = `Tracking ended at: ${formattedTime}`;
-            
+
             document.getElementById('trackingButton').disabled = true;
             // ボタンの表示を元に戻す
             //document.getElementById('trackingButton').innerText = 'Done';
@@ -125,3 +138,14 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 });
+
+async function writeFile(fileHandle, contents) {
+    // writable作成
+    const writable = await fileHandle.createWritable();
+
+    // コンテンツを書き込む
+    await writable.write(contents);
+
+    // ファイル閉じる
+    await writable.close();
+}
