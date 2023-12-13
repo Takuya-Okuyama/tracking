@@ -4,14 +4,20 @@ let lastSavedTime = Date.now(); // 最後に保存した時刻
 // 位置情報を取得してローカルストレージに保存する関数
 function saveLocation(position) {
     const currentTime = Date.now();
-    // 前回の保存から5秒以上経過しているか確認
-    if (currentTime - lastSavedTime >= 5000) {
+
+    // 前回の保存から2秒以上経過しているか確認
+    if (currentTime - lastSavedTime >= 2000) {
         const locationData = {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
             altitude: position.coords.altitude,
-            timestamp: new Date(position.timestamp).toISOString()
+            timestamp: new Date(position.timestamp).toISOString(),
+            accuracy: position.coords.accuracy,
+            altitudeAccuracy: position.coords.altitudeAccuracy,
+            heading: position.coords.heading,
+            speed: position.coords.speed,
         };
+
         // ローカルストレージに保存する前に、以前のデータを配列として取得
         let locations = JSON.parse(localStorage.getItem('locations')) || [];
         locations.push(locationData);
@@ -26,7 +32,7 @@ function startTracking() {
         // watchPositionメソッドを使用して位置情報の追跡を開始
         watchId = navigator.geolocation.watchPosition(saveLocation, handleError, {
             enableHighAccuracy: true,
-            timeout: 5000,
+            timeout: 2000,
             maximumAge: 0
         });
     } else {
@@ -46,9 +52,6 @@ function stopTracking() {
         watchId = null;
     }
 }
-
-// 5秒ごとに位置情報を取得する
-setInterval(saveLocation, 5000);
 
 function downloadData() {
     // Retrieve the location data from local storage
