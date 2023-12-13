@@ -5,25 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Location Tracker</title>
     <script src="script.js"></script>
-    <link rel="icon" href="./favicon.ico" />
-    <link rel="apple-touch-icon" href="./apple-touch-icon.png" sizes="180x180" />
+    <link rel="icon" href="./favicon.ico">
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" sizes="180x180">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Location Tracker</h1>
-    <button onclick="startTracking()">Start Tracking</button>
-    <button onclick="stopTracking()">Stop Tracking</button>
-    <button onclick="downloadData()">Download Data</button>
+    <div class="container">
+        <button id="trackingButton">Start Tracking</button>
+        
+        <!-- トラッキング開始時刻を表示するスペース -->
+        <div id="trackingStartTime" class="tracking-time"></div>
+        <div id="trackingEndTime" class="tracking-time"></div>
+    </div>
 
-    <table id="locationTable">
-        <tr>
-          <th>Timestamp</th>
-          <th>Latitude</th>
-          <th>Longitude</th>
-          <th>Altitude</th>
-          <th>Accuracy</th>
-          <th>Heading</th>
-          <th>Speed</th>
-        </tr>
-    </table>
+    <div class="container">
+        <div class="info-block">
+            <h2>Sensing Data</h2>
+            <div class="info">
+                <div class="info-item"><span>Time:</span> <span id="timestamp"></span></div>
+                <div class="info-item"><span>Latitude:</span> <span id="latitude"></span></div>
+                <div class="info-item"><span>Longitude:</span> <span id="longitude"></span></div>
+                <div class="info-item"><span>Altitude:</span> <span id="altitude"></span></div>
+                <div class="info-item"><span>Accuracy:</span> <span id="accuracy"></span></div>
+                <div class="info-item"><span>Altitude Accuracy:</span> <span id="altitudeAccuracy"></span></div>
+                <div class="info-item"><span>Heading:</span> <span id="heading"></span></div>
+                <div class="info-item"><span>Speed:</span> <span id="speed"></span></div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
