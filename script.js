@@ -13,8 +13,9 @@ let watchId = null;
 
 // 最後にデータを保存した時刻として、UNIXエポック時間の開始点を指定する
 let lastSavedTime = Date(0);
-let prev_lat = null;
-let prev_lon = null;
+let previousTime = Data(0);
+let previousLat = null;
+let previousLon = null;
 
 // トラッキングの状態（開始/停止）
 let isTracking = false;
@@ -78,12 +79,18 @@ function saveLocation(position) {
         spd: position.coords.speed || null
     };
 
+    // 移動距離と移動時間から、移動速度を算出
     let estimated_speed = null;
-    if (prev_lat != null && prev_lon != null && locationData.lat != null && locationData.lon != null) {
-        let elapsed_time = (currentTime - lastSavedTime) / (3600 * 1e3); // hour
-        let distance = calculateDistance(prev_lat, prev_lon, locationData.lat, locationData.lon) * 1e-3; // km
+    if (previousLat != null && previousLon != null && locationData.lat != null && locationData.lon != null) {
+        let elapsed_time = (currentTime - previousTime) / 3600000; // hour
+        let distance = calculateDistance(previousLat, previousLon, locationData.lat, locationData.lon) * 1e-3; // km
         estimated_speed = distance / elapsed_time;
     }
+
+    // 速度計算用のデータを更新
+    previousTime = currentTime;
+    previousLat = locationData.lat;
+    previousLon = locationData.lon;
 
     // ダッシュボードに最新情報を表示
     const now = new Date();
