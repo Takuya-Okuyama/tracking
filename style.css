@@ -1,9 +1,10 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4;
+    background-color: #f7f7f7;
     color: #333;
+    text-align: center;
 }
 
 .container {
@@ -11,59 +12,123 @@ body {
     margin: 30px auto;
     padding: 20px;
     background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.info-block {
-    text-align: center;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e6e6e6;
 }
 
 .info-block h2 {
-    margin-top: 0;
     color: #007bff;
+    font-size: 24px;
+    margin-bottom: 10px;
 }
 
 .info {
-    text-align: left;
-    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between; /* 各ブロック間に適切なスペースを確保 */
+    gap: 20px; /* ブラウザのサポート状況によっては、gapプロパティが使えない場合があります */
+}
+
+.info-item,
+.group {
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 10px;
 }
 
 .info-item {
     display: flex;
     justify-content: space-between;
-    border-bottom: 1px solid #ddd;
-    padding: 8px 0;
-}
-
-.info-item span {
-    font-size: 16px;
+    align-items: center;
 }
 
 .info-item span:first-child {
+    font-size: 14px;
+    color: #555;
+    margin-right: 5px;
+    font-weight: 500;
+}
+
+.info-item span:last-child {
+    font-size: 18px;
+    color: #000;
     font-weight: bold;
 }
 
+.group .info-item {
+    background-color: transparent;
+    padding: 0;
+    margin-bottom: 0;
+}
+
 #trackingButton {
-    padding: 10px 20px;
+    padding: 15px 30px;
     background-color: #4CAF50;
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 25px;
     cursor: pointer;
-    font-size: 16px;
-    text-align: center;
-    display: block;
-    margin: 20px auto;
+    font-size: 18px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: background-color 0.3s ease;
+    outline: none;
+    margin-bottom: 20px;
+    /* Added space between button and dashboard */
 }
 
 #trackingButton:hover {
-    background-color: #45a049;
+    background-color: #43a047;
 }
 
-.tracking-time {
-    text-align: center;
-    margin-top: 20px;
-    font-size: 16px;
-    color: #333;
+/* 方位（Heading）を含む info-item にアイコンのスペースを予約 */
+#heading::after {
+    content: '';
+    display: inline-block;
+    width: 20px; /* アイコンの幅 */
+    height: 20px; /* アイコンの高さ */
+    background: url('data:image/png;base64,COMPASS_ICON_BASE64_ENCODED') no-repeat center center;
+    background-size: contain;
+    margin-left: 5px; /* アイコンとテキストの間のスペース */
+    vertical-align: middle; /* アイコンをテキストの中央に揃える */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container {
+        width: 90%;
+        margin: 20px auto;
+    }
+
+    .info-block h2 {
+        font-size: 20px;
+    }
+}
+
+/* Adjust the layout to two columns for the latitude/longitude/accuracy and altitude/altitude accuracy groups */
+.group {
+    width: calc(50% - 10px); /* gapの半分を引いた値を計算 */
+    margin-bottom: 20px; /* ブロック間の縦のスペース */
+}
+
+/* Style adjustment for the heading with compass icon */
+#heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* This will ensure the space is distributed evenly */
+}
+
+/* Additional style to visually separate the groups */
+.group:not(:last-child) {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #e6e6e6;
+    padding-bottom: 20px;
+}
+
+/* 方位（Heading）の値が N/A の場合はアイコンを非表示にする */
+#heading[data-value="N/A"]::after {
+    display: none;
 }
