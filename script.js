@@ -49,7 +49,7 @@ dbRequest.onupgradeneeded = function (event) {
 };
 
 function calculateDistance(lat1, lon1, lat2, lon2) {
-    var R = 6371e3; // 地球の半径 (メートル)
+    var R = 6371; // 地球の半径 (km)
     var φ1 = lat1 * Math.PI/180; // 緯度1のラジアン値
     var φ2 = lat2 * Math.PI/180; // 緯度2のラジアン値
     var Δφ = (lat2-lat1) * Math.PI/180; // 緯度差のラジアン値
@@ -60,7 +60,7 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
             Math.sin(Δλ/2) * Math.sin(Δλ/2);
     var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 
-    var distance = R * c; // 結果 (メートル)
+    var distance = R * c; // 結果 (km)
     return distance;
 }
 
@@ -81,9 +81,9 @@ function saveLocation(position) {
 
     // 移動距離と移動時間から、移動速度を算出
     let estimated_speed = null;
-    if (previousLat != null && previousLon != null && locationData.latitude != null && locationData.longitude != null) {
-        let elapsed_time = (currentTime - previousTime) / 3600000; // hour
-        let distance = calculateDistance(previousLat, previousLon, locationData.latitude, locationData.longitude) * 1e-3; // km
+    if (previousLat != null && previousLon != null && locationData.latitude != null && locationData.longitude != null && currentTime > previousTime) {
+        const elapsed_time = (currentTime - previousTime) / 3600000; // hour
+        const distance = calculateDistance(previousLat, previousLon, locationData.latitude, locationData.longitude); // km
         estimated_speed = distance / elapsed_time;
     }
 
