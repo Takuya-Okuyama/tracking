@@ -12,8 +12,8 @@ if ('serviceWorker' in navigator) {
 let watchId = null;
 
 // 最後にデータを保存した時刻として、UNIXエポック時間の開始点を指定する
-let lastSavedTime = Date(0);
-let previousTime = Date(0);
+let lastSavedTime = 0;
+let previousTime = 0;
 let previousLat = null;
 let previousLon = null;
 
@@ -66,10 +66,11 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 
 // 位置情報を取得してローカルストレージに保存する関数
 function saveLocation(position) {
-    const currentTime = new Date(position.timestamp);
+    const currentTime = position.timestamp;
+    console.log(new Date(position.timestamp).toISOString());
 
     const locationData = {
-        time: currentTime.toISOString(),
+        time: new Date(position.timestamp).toISOString(),
         latitude: position.coords.latitude,
         longitude: position.coords.longitude,
         altitude: position.coords.altitude || null,
