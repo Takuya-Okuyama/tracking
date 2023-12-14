@@ -66,47 +66,44 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 
 // 位置情報を取得してローカルストレージに保存する関数
 function saveLocation(position) {
-    const currentTime = Date.now();
+    const currentTime = new Date(position.timestamp);
 
     const locationData = {
-        time: new Date(position.timestamp).toISOString(),
-        lat: position.coords.latitude,
-        lon: position.coords.longitude,
-        alt: position.coords.altitude || null,
-        acc: position.coords.accuracy || null,
-        altacc: position.coords.altitudeAccuracy || null,
-        head: position.coords.heading || null,
-        spd: position.coords.speed || null
+        time: currentTime.toISOString(),
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+        altitude: position.coords.altitude || null,
+        accuracy: position.coords.accuracy || null,
+        altitudeAccuracy: position.coords.altitudeAccuracy || null,
+        heading: position.coords.heading || null,
+        speed: position.coords.speed || null
     };
 
     // 移動距離と移動時間から、移動速度を算出
     let estimated_speed = null;
-    if (previousLat != null && previousLon != null && locationData.lat != null && locationData.lon != null) {
+    if (previousLat != null && previousLon != null && locationData.latitude != null && locationData.longitude != null) {
         let elapsed_time = (currentTime - previousTime) / 3600000; // hour
-        let distance = calculateDistance(previousLat, previousLon, locationData.lat, locationData.lon) * 1e-3; // km
+        let distance = calculateDistance(previousLat, previousLon, locationData.latitude, locationData.longitude) * 1e-3; // km
         estimated_speed = distance / elapsed_time;
     }
 
     // 速度計算用のデータを更新
     previousTime = currentTime;
-    previousLat = locationData.lat;
-    previousLon = locationData.lon;
+    previousLat = locationData.latitude;
+    previousLon = locationData.longitude;
 
     // ダッシュボードに最新情報を表示
-    const now = new Date();
-    document.getElementById('timestamp').innerText = now.toLocaleString('en-US', {
+    document.getElementById('timestamp').innerText = currentTime.toLocaleString('en-US', {
         month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit'
     });
-
-    // 緯度、経度、高度などの位置情報を表示
-    document.getElementById('latitude').innerText = locationData.lat.toFixed(5);
-    document.getElementById('longitude').innerText = locationData.lon.toFixed(5);
-    document.getElementById('accuracy').innerText = locationData.acc !== null ? (locationData.acc.toFixed(1) + " m") : "N/A";
-    document.getElementById('altitude').innerText = locationData.alt !== null ? (locationData.alt.toFixed(1) + " m") : "N/A";
-    document.getElementById('altitudeAccuracy').innerText = locationData.altacc !== null ? (locationData.altacc.toFixed(1) + " m") : "N/A";
-    document.getElementById('heading').innerText = locationData.head !== null ? round(locationData.head) : "N/A";
-    document.getElementById('speed').innerText = locationData.spd !== null ? (locationData.spd.toFixed(1) + " m/s") : "N/A";
-    document.getElementById('estimated_speed').innerText = estimated_speed !== null ? (estimated_speed.toFixed(1) + " km/h") : "N/A";
+    document.getElementById('latitude').innerText = locationData.latitude.toFixed(5);
+    document.getElementById('longitude').innerText = locationData.longitude.toFixed(5);
+    document.getElementById('accuracy').innerText = locationData.accuracy !== null ? (locationData.accuracy.toFixed(1) + " m") : "N/A";
+    document.getElementById('altitude').innerText = locationData.altitude !== null ? (locationData.altitude.toFixed(1) + " m") : "N/A";
+    document.getElementById('altitudeAccuracy').innerText = locationData.altitudeAccuracy !== null ? (locationData.altitudeAccuracy.toFixed(1) + " m") : "N/A";
+    document.getElementById('heading').innerText = locationData.heading !== null ? round(locationData.heading) : "N/A";
+    document.getElementById('speed').innerText = locationData.speed !== null ? (locationData.speed.toFixed(1) + " m/s") : "N/A";
+    document.getElementById('estimated_speed').innerText = estimated_speed !== null ? (estimated_speed.toFixed(1) + " kph") : "0.0 kph";
 
     // 前回の保存から10秒以上経過しているか確認
     if (currentTime - lastSavedTime >= sampling_interval) {

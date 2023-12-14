@@ -133,3 +133,9 @@ select:hover {
 option {
     padding: 5px;
 }
+
+.info-item > div {
+    flex-grow: 1;
+    display: flex;
+    justify-content: space-between;
+}
