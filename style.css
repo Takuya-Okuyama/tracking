@@ -113,3 +113,23 @@ body {
     border-bottom: 1px solid #e6e6e6;
     padding-bottom: 20px;
 }
+
+/* プルダウンメニューのスタイリング */
+select {
+    font-size: 14px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: white;
+    cursor: pointer;
+}
+
+/* プルダウンメニューのホバー時の効果 */
+select:hover {
+    border-color: #888;
+}
+
+/* 選択されたオプションのスタイリング */
+option {
+    padding: 5px;
+}
