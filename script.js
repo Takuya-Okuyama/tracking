@@ -13,7 +13,7 @@ let watchId = null;
 
 // 最後にデータを保存した時刻として、UNIXエポック時間の開始点を指定する
 let lastSavedTime = Date(0);
-let previousTime = Data(0);
+let previousTime = Date(0);
 let previousLat = null;
 let previousLon = null;
 
