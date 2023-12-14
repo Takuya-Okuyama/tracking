@@ -24,14 +24,13 @@ body {
 }
 
 .info {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between; /* 各ブロック間に適切なスペースを確保 */
-    gap: 20px; /* ブラウザのサポート状況によっては、gapプロパティが使えない場合があります */
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-top: 20px;
 }
 
-.info-item,
-.group {
+.info-item, .group {
     background-color: #f9f9f9;
     padding: 10px;
     border-radius: 6px;
@@ -75,24 +74,11 @@ body {
     letter-spacing: 1px;
     transition: background-color 0.3s ease;
     outline: none;
-    margin-bottom: 20px;
-    /* Added space between button and dashboard */
+    margin-bottom: 20px; /* Added space between button and dashboard */
 }
 
 #trackingButton:hover {
     background-color: #43a047;
-}
-
-/* 方位（Heading）を含む info-item にアイコンのスペースを予約 */
-#heading::after {
-    content: '';
-    display: inline-block;
-    width: 20px; /* アイコンの幅 */
-    height: 20px; /* アイコンの高さ */
-    background: url('data:image/png;base64,COMPASS_ICON_BASE64_ENCODED') no-repeat center center;
-    background-size: contain;
-    margin-left: 5px; /* アイコンとテキストの間のスペース */
-    vertical-align: middle; /* アイコンをテキストの中央に揃える */
 }
 
 /* Responsive adjustments */
@@ -109,16 +95,16 @@ body {
 
 /* Adjust the layout to two columns for the latitude/longitude/accuracy and altitude/altitude accuracy groups */
 .group {
-    width: calc(50% - 10px); /* gapの半分を引いた値を計算 */
-    margin-bottom: 20px; /* ブロック間の縦のスペース */
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
 }
 
 /* Style adjustment for the heading with compass icon */
 #heading {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    /* This will ensure the space is distributed evenly */
+    justify-content: space-between; /* This will ensure the space is distributed evenly */
 }
 
 /* Additional style to visually separate the groups */
@@ -126,9 +112,4 @@ body {
     margin-bottom: 20px;
     border-bottom: 1px solid #e6e6e6;
     padding-bottom: 20px;
-}
-
-/* 方位（Heading）の値が N/A の場合はアイコンを非表示にする */
-#heading[data-value="N/A"]::after {
-    display: none;
 }
