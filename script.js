@@ -59,10 +59,10 @@ function saveLocation(position) {
     // 緯度、経度、高度などの位置情報を表示
     document.getElementById('latitude').innerText = locationData.lat.toFixed(5);
     document.getElementById('longitude').innerText = locationData.lon.toFixed(5);
-    document.getElementById('altitude').innerText = locationData.alt !== null ? (locationData.alt.toFixed(1) + " m") : "N/A";
     document.getElementById('accuracy').innerText = locationData.acc !== null ? (locationData.acc.toFixed(1) + " m") : "N/A";
-    document.getElementById('altitudeAccuracy').innerText = locationData.altacc !== null ? (locationData.altacc + " m") : "N/A";
-    document.getElementById('heading').innerText = locationData.head !== null ? locationData.head.toFixed(1) : "N/A";
+    document.getElementById('altitude').innerText = locationData.alt !== null ? (locationData.alt.toFixed(1) + " m") : "N/A";
+    document.getElementById('altitudeAccuracy').innerText = locationData.altacc !== null ? (locationData.altacc.toFixed(1) + " m") : "N/A";
+    document.getElementById('heading').innerText = locationData.head !== null ? round(locationData.head) : "N/A";
     document.getElementById('speed').innerText = locationData.spd !== null ? (locationData.spd.toFixed(1) + " m/s") : "N/A";
 
     // 前回の保存から10秒以上経過しているか確認
