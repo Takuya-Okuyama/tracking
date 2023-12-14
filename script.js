@@ -67,7 +67,6 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 // 位置情報を取得してローカルストレージに保存する関数
 function saveLocation(position) {
     const currentTime = position.timestamp;
-    console.log(new Date(position.timestamp).toISOString());
 
     const locationData = {
         timestamp: position.timestamp,
@@ -127,23 +126,20 @@ document.addEventListener('DOMContentLoaded', function () {
     function startTracking() {
         // ファイル名
         const now = new Date();
-        saveFilePath = "LocationTracker_" + now.toLocaleString('en-US', {
+        const strTime = now.toLocaleString('en-US', {
             month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit'
         });
+        saveFilePath = "LocationTracker_" + strTime;
 
         if (navigator.geolocation) {
             // watchPositionメソッドを使用して位置情報の追跡を開始
             watchId = navigator.geolocation.watchPosition(saveLocation, handleError, {
                 enableHighAccuracy: true,
                 timeout: 100 * 1000,
-                maximumAge: 0
+                maximumAge: 500
             });
 
             // トラッキング開始時刻を表示
-            const now = new Date();
-            const strTime = now.toLocaleString('en-US', {
-                month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit'
-            });
             document.getElementById('trackingStartTime').innerText = `Tracking started at: ${strTime}`;
 
             // ボタンの表示を変更
