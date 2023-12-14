@@ -70,7 +70,7 @@ function saveLocation(position) {
     console.log(new Date(position.timestamp).toISOString());
 
     const locationData = {
-        time: new Date(position.timestamp).toISOString(),
+        timestamp: position.timestamp,
         latitude: position.coords.latitude,
         longitude: position.coords.longitude,
         altitude: position.coords.altitude || null,
@@ -94,7 +94,7 @@ function saveLocation(position) {
     previousLon = locationData.longitude;
 
     // ダッシュボードに最新情報を表示
-    document.getElementById('timestamp').innerText = currentTime.toLocaleString('en-US', {
+    document.getElementById('timestamp').innerText = new Date(position.timestamp).toLocaleString('en-US', {
         month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit'
     });
     document.getElementById('latitude').innerText = locationData.latitude.toFixed(5);
