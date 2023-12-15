@@ -104,6 +104,7 @@ function saveLocation(position) {
     document.getElementById('heading').innerText = locationData.heading !== null ? round(locationData.heading) : "N/A";
     document.getElementById('speed').innerText = locationData.speed !== null ? (locationData.speed.toFixed(1) + " m/s") : "N/A";
     document.getElementById('estimated_speed').innerText = estimated_speed !== null ? (estimated_speed.toFixed(1) + " kph") : "0.0 kph";
+    document.getElementById("map").href = "https://www.google.com/maps/@" + locationData.latitude.toFixed(5) + "," + locationData.longitude.toFixed(5);
 
     // 前回の保存から10秒以上経過しているか確認
     if (currentTime - lastSavedTime >= sampling_interval) {
