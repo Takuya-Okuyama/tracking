@@ -24,7 +24,7 @@ let isTracking = false;
 let saveFilePath;
 
 // サンプリング間隔をミリ秒単位で設定
-const sampling_interval = 10 * 1000;
+const sampling_interval = 10 * 1;
 
 // IndexedDBデータベースへの接続リクエスト
 let db;
@@ -50,21 +50,21 @@ dbRequest.onupgradeneeded = function (event) {
 
 function calculateDistance(lat1, lon1, lat2, lon2) {
     var R = 6371; // 地球の半径 (km)
-    var φ1 = lat1 * Math.PI/180; // 緯度1のラジアン値
-    var φ2 = lat2 * Math.PI/180; // 緯度2のラジアン値
-    var Δφ = (lat2-lat1) * Math.PI/180; // 緯度差のラジアン値
-    var Δλ = (lon2-lon1) * Math.PI/180; // 経度差のラジアン値
+    var φ1 = lat1 * Math.PI / 180; // 緯度1のラジアン値
+    var φ2 = lat2 * Math.PI / 180; // 緯度2のラジアン値
+    var Δφ = (lat2 - lat1) * Math.PI / 180; // 緯度差のラジアン値
+    var Δλ = (lon2 - lon1) * Math.PI / 180; // 経度差のラジアン値
 
-    var a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-            Math.cos(φ1) * Math.cos(φ2) *
-            Math.sin(Δλ/2) * Math.sin(Δλ/2);
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    var a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+        Math.cos(φ1) * Math.cos(φ2) *
+        Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
     var distance = R * c; // 結果 (km)
     return distance;
 }
 
-// 位置情報を取得してローカルストレージに保存する関数
+// 位置情報を取得してDBに保存する関数
 function saveLocation(position) {
     const currentTime = position.timestamp;
 
@@ -135,9 +135,14 @@ document.addEventListener('DOMContentLoaded', function () {
             // watchPositionメソッドを使用して位置情報の追跡を開始
             watchId = navigator.geolocation.watchPosition(saveLocation, handleError, {
                 enableHighAccuracy: true,
-                timeout: 100 * 1000,
-                maximumAge: 500
+                timeout: 15000,
+                maximumAge: 0
             });
+
+            //stop watching after 10 seconds
+            //setTimeout(() => {
+            //    navigator.geolocation.clearWatch(watchId)
+            //}, 10 * 1000)
 
             // トラッキング開始時刻を表示
             document.getElementById('trackingStartTime').innerText = `Tracking started at: ${strTime}`;
