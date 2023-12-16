@@ -24,7 +24,7 @@ let isTracking = false;
 let saveFilePath;
 
 // サンプリング間隔をミリ秒単位で設定
-const sampling_interval = 10 * 1;
+const sampling_interval = 0.5 * 1000;
 
 // IndexedDBデータベースへの接続リクエスト
 let db;
@@ -59,9 +59,7 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
         Math.cos(φ1) * Math.cos(φ2) *
         Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
     var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-    var distance = R * c; // 結果 (km)
-    return distance;
+    return R * c;
 }
 
 // 位置情報を取得してDBに保存する関数
@@ -80,12 +78,9 @@ function saveLocation(position) {
     };
 
     // 移動距離と移動時間から、移動速度を算出
-    let estimated_speed = null;
-    if (previousLat != null && previousLon != null && locationData.latitude != null && locationData.longitude != null && currentTime > previousTime) {
-        const elapsed_time = (currentTime - previousTime) / 3600000; // hour
-        const distance = calculateDistance(previousLat, previousLon, locationData.latitude, locationData.longitude); // km
-        estimated_speed = distance / elapsed_time;
-    }
+    const elapsed_time = (currentTime - previousTime) / 3600000; // hour
+    const distance = calculateDistance(previousLat, previousLon, locationData.latitude, locationData.longitude); // km
+    const estimated_speed = distance / elapsed_time;
 
     // 速度計算用のデータを更新
     previousTime = currentTime;
@@ -103,17 +98,17 @@ function saveLocation(position) {
     document.getElementById('altitudeAccuracy').innerText = locationData.altitudeAccuracy !== null ? (locationData.altitudeAccuracy.toFixed(1) + " m") : "N/A";
     document.getElementById('heading').innerText = locationData.heading !== null ? round(locationData.heading) : "N/A";
     document.getElementById('speed').innerText = locationData.speed !== null ? (locationData.speed.toFixed(1) + " m/s") : "N/A";
-    document.getElementById('estimated_speed').innerText = estimated_speed !== null ? (estimated_speed.toFixed(1) + " kph") : "0.0 kph";
+    document.getElementById('estimated_speed').innerText = estimated_speed !== null ? (estimated_speed.toFixed(0) + " kph") : "0 kph";
     document.getElementById("map").href = "https://www.google.com/maps?q=" + locationData.latitude.toFixed(5) + "," + locationData.longitude.toFixed(5);
 
     // 前回の保存から10秒以上経過しているか確認
-    if (currentTime - lastSavedTime >= sampling_interval) {
-        let transaction = db.transaction(["locations"], "readwrite");
-        let store = transaction.objectStore("locations");
-        store.add(locationData);
+    //if (currentTime - lastSavedTime >= sampling_interval) {
+    let transaction = db.transaction(["locations"], "readwrite");
+    let store = transaction.objectStore("locations");
+    store.add(locationData);
 
-        lastSavedTime = currentTime;
-    }
+    lastSavedTime = currentTime;
+    //}
 }
 
 // 位置情報取得のエラーハンドリング
