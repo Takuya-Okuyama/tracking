@@ -124,8 +124,9 @@ function saveLocation(position) {
     document.getElementById('altitudeAccuracy').innerText = locationData.altitudeAccuracy !== null ? (locationData.altitudeAccuracy.toFixed(1) + " m") : "N/A";
     document.getElementById('heading').innerText = locationData.heading !== null ? round(locationData.heading) : "N/A";
     document.getElementById('speed').innerText = locationData.speed !== null ? (locationData.speed.toFixed(1) + " m/s") : "N/A";
-    document.getElementById('estimated_speed').innerText = estimated_speed !== null ? (estimated_speed.toFixed(0) + " kph") : "0 kph";
-    document.getElementById("map").href = distance + "/" + elapsed_time;
+    document.getElementById('estimated_speed').innerText = distance + "/" + elapsed_time;
+    // estimated_speed !== null ? (estimated_speed.toFixed(0) + " kph") : "0 kph";
+    // document.getElementById("map").href = distance + "/" + elapsed_time;
     // "https://www.google.com/maps?q=" + locationData.latitude.toFixed(5) + "," + locationData.longitude.toFixed(5);
 
     // 前回の保存から10秒以上経過しているか確認
