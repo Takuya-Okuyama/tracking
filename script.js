@@ -77,7 +77,8 @@ function calculateDistanceForClosePoints(lat1, lon1, lat2, lon2) {
     const R = 6371.0; // 地球の半径 (km)
     const x = degreesToRadians(lon2 - lon1) * Math.cos(degreesToRadians((lat1 + lat2) / 2));
     const y = degreesToRadians(lat2 - lat1);
-    return Math.sqrt(x * x + y * y) * R;
+    const alpha = 8;
+    return Math.round(alpha * Math.sqrt(x * x + y * y) * R) / alpha;
 }
 
 function isValidCoordinate(lat, lon) {
@@ -124,7 +125,7 @@ function saveLocation(position) {
     document.getElementById('altitudeAccuracy').innerText = locationData.altitudeAccuracy !== null ? (locationData.altitudeAccuracy.toFixed(1) + " m") : "N/A";
     document.getElementById('heading').innerText = locationData.heading !== null ? round(locationData.heading) : "N/A";
     document.getElementById('speed').innerText = locationData.speed !== null ? (locationData.speed.toFixed(1) + " m/s") : "N/A";
-    document.getElementById('estimated_speed').innerText = distance + "/" + elapsed_time;
+    document.getElementById('estimated_speed').innerText = distance + "km /" + elapsed_time + " h";
     // estimated_speed !== null ? (estimated_speed.toFixed(0) + " kph") : "0 kph";
     // document.getElementById("map").href = distance + "/" + elapsed_time;
     // "https://www.google.com/maps?q=" + locationData.latitude.toFixed(5) + "," + locationData.longitude.toFixed(5);
