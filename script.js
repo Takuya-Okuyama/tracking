@@ -49,17 +49,43 @@ dbRequest.onupgradeneeded = function (event) {
 };
 
 function calculateDistance(lat1, lon1, lat2, lon2) {
-    var R = 6371; // 地球の半径 (km)
-    var φ1 = lat1 * Math.PI / 180; // 緯度1のラジアン値
-    var φ2 = lat2 * Math.PI / 180; // 緯度2のラジアン値
-    var Δφ = (lat2 - lat1) * Math.PI / 180; // 緯度差のラジアン値
-    var Δλ = (lon2 - lon1) * Math.PI / 180; // 経度差のラジアン値
+    // 有効な緯度経度の範囲をチェックする
+    if (!isValidCoordinate(lat1, lon1) || !isValidCoordinate(lat2, lon2)) {
+        throw new Error("Invalid latitude or longitude values");
+    }
 
-    var a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-        Math.cos(φ1) * Math.cos(φ2) *
-        Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    // 二点間の距離が非常に近い場合の処理
+    if (Math.abs(lat1 - lat2) < 0.0001 && Math.abs(lon1 - lon2) < 0.0001) {
+        return calculateDistanceForClosePoints(lat1, lon1, lat2, lon2);
+    }
+
+    const R = 6371.0; // 地球の半径 (km)
+    const radLat1 = degreesToRadians(lat1);
+    const radLat2 = degreesToRadians(lat2);
+    const deltaLat = degreesToRadians(lat2 - lat1);
+    const deltaLon = degreesToRadians(lon2 - lon1);
+
+    var a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
+            Math.cos(radLat1) * Math.cos(radLat2) *
+            Math.sin(deltaLon / 2) * Math.sin(deltaLon / 2);
     var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
+    return R * c; // 距離をキロメートル単位で返す
+}
+
+function calculateDistanceForClosePoints(lat1, lon1, lat2, lon2) {
+    // 平面幾何学に基づく近似計算
+    const R = 6371.0; // 地球の半径 (km)
+    const x = degreesToRadians(lon2 - lon1) * Math.cos(degreesToRadians((lat1 + lat2) / 2));
+    const y = degreesToRadians(lat2 - lat1);
+    return Math.sqrt(x * x + y * y) * R;
+}
+
+function isValidCoordinate(lat, lon) {
+    return lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180;
+}
+
+function degreesToRadians(degrees) {
+    return degrees * Math.PI / 180;
 }
 
 // 位置情報を取得してDBに保存する関数
@@ -70,15 +96,15 @@ function saveLocation(position) {
         timestamp: position.timestamp,
         latitude: position.coords.latitude,
         longitude: position.coords.longitude,
-        altitude: position.coords.altitude || null,
-        accuracy: position.coords.accuracy || null,
-        altitudeAccuracy: position.coords.altitudeAccuracy || null,
-        heading: position.coords.heading || null,
-        speed: position.coords.speed || null
+        altitude: position.coords.altitude,
+        accuracy: position.coords.accuracy,
+        altitudeAccuracy: position.coords.altitudeAccuracy,
+        heading: position.coords.heading,
+        speed: position.coords.speed
     };
 
     // 移動距離と移動時間から、移動速度を算出
-    const elapsed_time = (currentTime - previousTime) / 3600000; // hour
+    const elapsed_time = (currentTime - previousTime) / 3600000.0; // hour
     const distance = calculateDistance(previousLat, previousLon, locationData.latitude, locationData.longitude); // km
     const estimated_speed = distance / elapsed_time;
 
