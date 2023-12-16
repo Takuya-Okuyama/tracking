@@ -16,6 +16,14 @@
 <body>
     <div class="container">
         <div class="info-block">
+            <div class="container">
+                <button id="trackingButton">Start Tracking</button>
+
+                <!-- トラッキング開始時刻を表示するスペース -->
+                <div id="trackingStartTime" class="tracking-time"></div>
+                <div id="trackingEndTime" class="tracking-time"></div>
+            </div>
+
             <h2>Dashboard</h2>
             <div class="info">
                 <div class="info-item"><span>Time:</span> <span id="timestamp"></span></div>
@@ -44,14 +52,11 @@
             <div class="info">
                 <div class="info-item"><span>Estimated speed:</span> <span id="estimated_speed"></span></div>
             </div>
-        </div>
 
-        <div class="container">
-            <button id="trackingButton">Start Tracking</button>
-
-            <!-- トラッキング開始時刻を表示するスペース -->
-            <div id="trackingStartTime" class="tracking-time"></div>
-            <div id="trackingEndTime" class="tracking-time"></div>
+            <h2>Log</h2>
+            <div class="info">
+                <div class="info-item"><textarea id="log" readonly></textarea>
+            </div>
         </div>
     </div>
 </body>

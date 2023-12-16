@@ -139,3 +139,19 @@ option {
     display: flex;
     justify-content: space-between;
 }
+
+#log {
+    width: 100%; /* コンテナの幅いっぱいに広がるように */
+    height: 150px; /* 適切な高さ */
+    padding: 10px; /* 内側の余白 */
+    margin-top: 10px; /* 上部の余白 */
+    border: 1px solid #e6e6e6; /* 境界線のスタイル */
+    border-radius: 8px; /* 角を丸く */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* シャドウ効果 */
+    font-family: 'Helvetica Neue', Arial, sans-serif; /* フォントの指定 */
+    font-size: 16px; /* フォントサイズ */
+    line-height: 1.5; /* 行の高さ */
+    color: #333; /* テキストカラー */
+    background-color: #fff; /* 背景色 */
+    resize: none; /* サイズ変更不可 */
+}

@@ -8,6 +8,8 @@ if ('serviceWorker' in navigator) {
     });
 }
 
+var logElement = null;
+
 // IDを格納するための変数、watchPosition関数から得られる
 let watchId = null;
 
@@ -91,6 +93,11 @@ function degreesToRadians(degrees) {
     return degrees * Math.PI / 180;
 }
 
+function addToLog(text) {
+    var logElement = document.getElementById('log');
+    logElement.innerHTML += text + '<br>'; // 改行を追加するために <br> を使用
+}
+
 // 位置情報を取得してDBに保存する関数
 function saveLocation(position) {
     const currentTime = position.timestamp;
@@ -105,16 +112,11 @@ function saveLocation(position) {
         heading: position.coords.heading,
         speed: position.coords.speed
     };
-    consol.log("-----");
-    console.log(locationData);
 
     // 移動距離と移動時間から、移動速度を算出
     const elapsed_time = (currentTime - previousTime) / 3600000.0; // hour
     const distance = calculateDistance(previousLat, previousLon, locationData.latitude, locationData.longitude); // km
     const estimated_speed = distance / elapsed_time;
-    console.log(elapsed_time);
-    console.log(distance);
-    console.log(estimated_speed);
 
     // 速度計算用のデータを更新
     previousTime = currentTime;
@@ -133,6 +135,7 @@ function saveLocation(position) {
     document.getElementById('heading').innerText = locationData.heading !== null ? round(locationData.heading) : "N/A";
     document.getElementById('speed').innerText = locationData.speed !== null ? (locationData.speed.toFixed(1) + " m/s") : "N/A";
     document.getElementById('estimated_speed').innerText = estimated_speed !== null ? (estimated_speed.toFixed(0) + " kph") : "0 kph";
+    document.getElementById('log').innerHTML += JSON.stringify(locationData); + "<br />";
 
     // 前回の保存から10秒以上経過しているか確認
     //if (currentTime - lastSavedTime >= sampling_interval) {
@@ -151,6 +154,7 @@ function handleError(error) {
 
 document.addEventListener('DOMContentLoaded', function () {
     let isTracking = false;
+    logElement = document.getElementById('log');
 
     function startTracking() {
         // ファイル名
