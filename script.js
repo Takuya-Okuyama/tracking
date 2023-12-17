@@ -204,8 +204,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         request.onsuccess = function (event) {
             //let data = event.target.result;
+            //download(JSON.stringify(data, null, 2), saveFilePath, "text/plain");
             let data = document.getElementById('log').innerHTML;
-            download(JSON.stringify(data, null, 2), saveFilePath, "text/plain");
+            download(data, saveFilePath, "text/plain");
         };
 
         // トラッキング修了時刻を表示
