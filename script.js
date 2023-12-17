@@ -26,7 +26,7 @@ let isTracking = false;
 let saveFilePath;
 
 // サンプリング間隔をミリ秒単位で設定
-const sampling_interval = 0.5 * 1000;
+const sampling_interval = 3 * 1000;
 
 // IndexedDBデータベースへの接続リクエスト
 let db;
@@ -68,8 +68,8 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
     const deltaLon = degreesToRadians(lon2 - lon1);
 
     var a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
-            Math.cos(radLat1) * Math.cos(radLat2) *
-            Math.sin(deltaLon / 2) * Math.sin(deltaLon / 2);
+        Math.cos(radLat1) * Math.cos(radLat2) *
+        Math.sin(deltaLon / 2) * Math.sin(deltaLon / 2);
     var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
     const alpha = 2.0;
@@ -135,16 +135,17 @@ function saveLocation(position) {
     document.getElementById('heading').innerText = locationData.heading !== null ? round(locationData.heading) : "N/A";
     document.getElementById('speed').innerText = locationData.speed !== null ? (locationData.speed.toFixed(1) + " m/s") : "N/A";
     document.getElementById('estimated_speed').innerText = estimated_speed !== null ? (estimated_speed.toFixed(0) + " kph") : "0 kph";
-    document.getElementById('log').innerHTML += JSON.stringify(locationData); + "<br />";
 
     // 前回の保存から10秒以上経過しているか確認
-    //if (currentTime - lastSavedTime >= sampling_interval) {
-    let transaction = db.transaction(["locations"], "readwrite");
-    let store = transaction.objectStore("locations");
-    store.add(locationData);
+    if (currentTime - lastSavedTime >= sampling_interval) {
+        document.getElementById('log').innerHTML += JSON.stringify(locationData); + "<br />";
 
-    lastSavedTime = currentTime;
-    //}
+        //let transaction = db.transaction(["locations"], "readwrite");
+        //let store = transaction.objectStore("locations");
+        //store.add(locationData);
+
+        lastSavedTime = currentTime;
+    }
 }
 
 // 位置情報取得のエラーハンドリング
@@ -202,7 +203,8 @@ document.addEventListener('DOMContentLoaded', function () {
         };
 
         request.onsuccess = function (event) {
-            let data = event.target.result;
+            //let data = event.target.result;
+            let data = document.getElementById('log').innerHTML;
             download(JSON.stringify(data, null, 2), saveFilePath, "text/plain");
         };
 
